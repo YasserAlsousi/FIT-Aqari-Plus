@@ -1,0 +1,243 @@
+@model IEnumerable<PropertyManagement.Core.Entities.Payment>
+@{
+    ViewData["Title"] = "المدفوعات";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-money-bill-wave me-2"></i>
+                    إدارة المدفوعات
+                </h1>
+                <p class="text-muted">قائمة بجميع المدفوعات والإيصالات</p>
+            </div>
+            <a href="/Payments/Create" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                تسجيل دفعة جديدة
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-money-bill-wave text-success mb-2" style="font-size: 2rem;"></i>
+                <h5 class="text-success">@ViewBag.TotalReceived?.ToString("N0") جنيه</h5>
+                <small class="text-muted">إجمالي المحصل</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-clock text-warning mb-2" style="font-size: 2rem;"></i>
+                <h5 class="text-warning">@ViewBag.PendingPayments</h5>
+                <small class="text-muted">دفعات معلقة</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-alt text-info mb-2" style="font-size: 2rem;"></i>
+                <h5 class="text-info">@ViewBag.ThisMonthPayments</h5>
+                <small class="text-muted">دفعات هذا الشهر</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle text-danger mb-2" style="font-size: 2rem;"></i>
+                <h5 class="text-danger">@ViewBag.OverduePayments</h5>
+                <small class="text-muted">دفعات متأخرة</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <form method="get">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" value="@ViewBag.Search" placeholder="البحث في المدفوعات...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <div class="d-flex gap-2">
+            <select class="form-select" onchange="filterByStatus(this.value)">
+                <option value="">جميع الحالات</option>
+                <option value="Paid">مدفوع</option>
+                <option value="Pending">معلق</option>
+                <option value="Overdue">متأخر</option>
+            </select>
+            <select class="form-select" onchange="filterByMonth(this.value)">
+                <option value="">جميع الأشهر</option>
+                <option value="1">يناير</option>
+                <option value="2">فبراير</option>
+                <option value="3">مارس</option>
+                <option value="4">أبريل</option>
+                <option value="5">مايو</option>
+                <option value="6">يونيو</option>
+                <option value="7">يوليو</option>
+                <option value="8">أغسطس</option>
+                <option value="9">سبتمبر</option>
+                <option value="10">أكتوبر</option>
+                <option value="11">نوفمبر</option>
+                <option value="12">ديسمبر</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Payments List -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>رقم الإيصال</th>
+                            <th>العقد</th>
+                            <th>المستأجر</th>
+                            <th>المبلغ</th>
+                            <th>تاريخ الاستحقاق</th>
+                            <th>تاريخ الدفع</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">@payment.ReceiptNumber</div>
+                                    <small class="text-muted">@payment.PaymentType</small>
+                                </td>
+                                <td>
+                                    <div>@payment.Contract.ContractNumber</div>
+                                    <small class="text-muted">@payment.Contract.Property.Title</small>
+                                </td>
+                                <td>
+                                    <div>@payment.Contract.Tenant.FirstName @payment.Contract.Tenant.LastName</div>
+                                    <small class="text-muted">@payment.Contract.Tenant.Phone</small>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary">@payment.Amount.ToString("N0") جنيه</div>
+                                </td>
+                                <td>@payment.DueDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (payment.PaymentDate.HasValue)
+                                    {
+                                        @payment.PaymentDate.Value.ToString("dd/MM/yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">لم يتم الدفع</span>
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        var statusClass = payment.Status switch
+                                        {
+                                            "Paid" => "success",
+                                            "Pending" => "warning",
+                                            "Overdue" => "danger",
+                                            _ => "secondary"
+                                        };
+                                        var statusText = payment.Status switch
+                                        {
+                                            "Paid" => "مدفوع",
+                                            "Pending" => "معلق",
+                                            "Overdue" => "متأخر",
+                                            _ => payment.Status
+                                        };
+                                    }
+                                    <span class="badge bg-@statusClass">@statusText</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="/Payments/Details/@payment.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (payment.Status != "Paid")
+                                        {
+                                            <a href="/Payments/MarkAsPaid/@payment.Id" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                        }
+                                        <a href="/Payments/Receipt/@payment.Id" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i&search=@ViewBag.Search">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-money-bill-wave text-muted mb-3" style="font-size: 3rem;"></i>
+                <h5 class="text-muted">لا يوجد مدفوعات مسجلة</h5>
+                <p class="text-muted">ابدأ بتسجيل أول دفعة</p>
+                <a href="/Payments/Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    تسجيل دفعة جديدة
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+function filterByStatus(status) {
+    const url = new URL(window.location);
+    if (status) {
+        url.searchParams.set('status', status);
+    } else {
+        url.searchParams.delete('status');
+    }
+    window.location = url;
+}
+
+function filterByMonth(month) {
+    const url = new URL(window.location);
+    if (month) {
+        url.searchParams.set('month', month);
+    } else {
+        url.searchParams.delete('month');
+    }
+    window.location = url;
+}
+</script>

@@ -1,0 +1,292 @@
+@model PropertyManagement.Core.Entities.Contract
+@{
+    ViewData["Title"] = "تعديل العقد";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="/Contracts">العقود</a></li>
+                <li class="breadcrumb-item"><a href="/Contracts/Details/@Model.Id">@Model.ContractNumber</a></li>
+                <li class="breadcrumb-item active">تعديل</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-file-contract me-2"></i>
+            تعديل العقد
+        </h1>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="CreatedAt" type="hidden" />
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Contract Basic Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">معلومات العقد الأساسية</h6>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ContractNumber" class="form-label">رقم العقد <span class="text-danger">*</span></label>
+                            <input asp-for="ContractNumber" class="form-control" readonly>
+                            <span asp-validation-for="ContractNumber" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">تاريخ إنشاء العقد</label>
+                            <input type="text" class="form-control" value="@Model.CreatedAt.ToString("dd/MM/yyyy")" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartDate" class="form-label">تاريخ بداية العقد <span class="text-danger">*</span></label>
+                            <input asp-for="StartDate" type="date" class="form-control">
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndDate" class="form-label">تاريخ نهاية العقد <span class="text-danger">*</span></label>
+                            <input asp-for="EndDate" type="date" class="form-control">
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox">
+                        <label asp-for="IsActive" class="form-check-label">
+                            العقد نشط
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property and Tenant Selection -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">العقار والمستأجر</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PropertyId" class="form-label">العقار <span class="text-danger">*</span></label>
+                            <select asp-for="PropertyId" class="form-select" asp-items="ViewBag.Properties">
+                                <option value="">اختر العقار</option>
+                            </select>
+                            <span asp-validation-for="PropertyId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TenantId" class="form-label">المستأجر <span class="text-danger">*</span></label>
+                            <select asp-for="TenantId" class="form-select" asp-items="ViewBag.Tenants">
+                                <option value="">اختر المستأجر</option>
+                            </select>
+                            <span asp-validation-for="TenantId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Terms -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">الشروط المالية</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="MonthlyRent" class="form-label">الإيجار الشهري (جنيه) <span class="text-danger">*</span></label>
+                            <input asp-for="MonthlyRent" type="number" step="0.01" class="form-control" id="monthlyRentInput">
+                            <span asp-validation-for="MonthlyRent" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SecurityDeposit" class="form-label">مبلغ التأمين (جنيه)</label>
+                            <input asp-for="SecurityDeposit" type="number" step="0.01" class="form-control">
+                            <span asp-validation-for="SecurityDeposit" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">إجمالي قيمة العقد</label>
+                            <input type="text" class="form-control" id="totalContractValue" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">مدة العقد (بالأشهر)</label>
+                            <input type="text" class="form-control" id="contractDuration" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contract Terms -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">شروط وأحكام إضافية</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="Terms" class="form-label">الشروط والأحكام</label>
+                        <textarea asp-for="Terms" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="Terms" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Contract Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">معلومات العقد</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">رقم العقد:</label>
+                        <div class="fw-bold">@Model.ContractNumber</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">تاريخ الإنشاء:</label>
+                        <div>@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+                    </div>
+
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label text-muted">آخر تحديث:</label>
+                            <div>@Model.UpdatedAt.Value.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">عدد المدفوعات:</label>
+                        <div>@Model.Payments.Count دفعة</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">الحالة الحالية:</label>
+                        <span class="badge bg-@(Model.IsActive ? "success" : "secondary")">
+                            @(Model.IsActive ? "نشط" : "منتهي")
+                        </span>
+                    </div>
+
+                    @if (Model.Payments.Any(p => p.Status == "Paid"))
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            تحذير: هذا العقد له مدفوعات مسجلة
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Current Property -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">العقار الحالي</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>@Model.Property.Title</strong>
+                    </div>
+                    <div class="text-muted mb-3">@Model.Property.Address</div>
+                    <div class="d-grid">
+                        <a href="/Properties/Details/@Model.Property.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>
+                            عرض تفاصيل العقار
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Tenant -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">المستأجر الحالي</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-sm bg-success text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">@Model.Tenant.FirstName @Model.Tenant.LastName</div>
+                            <small class="text-muted">@Model.Tenant.Phone</small>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <a href="/Tenants/Details/@Model.Tenant.Id" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-eye me-1"></i>
+                            عرض تفاصيل المستأجر
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            حفظ التغييرات
+                        </button>
+                        <a href="/Contracts/Details/@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للتفاصيل
+                        </a>
+                        <a href="/Contracts" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>
+                            العودة للقائمة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Calculate contract duration and total value
+        function calculateContractDetails() {
+            const startDate = document.getElementById('StartDate').value;
+            const endDate = document.getElementById('EndDate').value;
+            const monthlyRent = parseFloat(document.getElementById('monthlyRentInput').value) || 0;
+            
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffTime = Math.abs(end - start);
+                const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
+                
+                document.getElementById('contractDuration').value = diffMonths + ' شهر';
+                document.getElementById('totalContractValue').value = (monthlyRent * diffMonths).toLocaleString() + ' جنيه';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('StartDate').addEventListener('change', calculateContractDetails);
+        document.getElementById('EndDate').addEventListener('change', calculateContractDetails);
+        document.getElementById('monthlyRentInput').addEventListener('input', calculateContractDetails);
+
+        // Initialize on page load
+        calculateContractDetails();
+    </script>
+}
+
+<style>
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+}
+</style>

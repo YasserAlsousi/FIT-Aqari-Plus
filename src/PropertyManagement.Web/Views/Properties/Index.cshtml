@@ -1,0 +1,189 @@
+@model IEnumerable<PropertyManagement.Core.Entities.Property>
+@{
+    ViewData["Title"] = "العقارات";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-building me-2"></i>
+                    إدارة العقارات
+                </h1>
+                <p class="text-muted">قائمة بجميع العقارات المسجلة</p>
+            </div>
+            <a href="/Properties/Create" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                إضافة عقار جديد
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form method="get">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" value="@ViewBag.Search" placeholder="البحث في العقارات...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <div class="d-flex gap-2">
+            <select class="form-select" onchange="filterByType(this.value)">
+                <option value="">جميع الأنواع</option>
+                <option value="Apartment">شقة</option>
+                <option value="Villa">فيلا</option>
+                <option value="Office">مكتب</option>
+                <option value="Shop">محل</option>
+            </select>
+            <select class="form-select" onchange="filterByStatus(this.value)">
+                <option value="">جميع الحالات</option>
+                <option value="Available">متاح</option>
+                <option value="Rented">مؤجر</option>
+                <option value="Maintenance">صيانة</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Properties Grid -->
+<div class="row">
+    @if (Model.Any())
+    {
+        @foreach (var property in Model)
+        {
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 pb-0">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title mb-1">@property.Title</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    @property.Address
+                                </small>
+                            </div>
+                            <span class="badge bg-@(property.Status == "Available" ? "success" : property.Status == "Rented" ? "warning" : "secondary")">
+                                @(property.Status == "Available" ? "متاح" : property.Status == "Rented" ? "مؤجر" : "صيانة")
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center mb-3">
+                            <div class="col-4">
+                                <div class="border-end">
+                                    <h6 class="mb-0">@property.Bedrooms</h6>
+                                    <small class="text-muted">غرف نوم</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border-end">
+                                    <h6 class="mb-0">@property.Bathrooms</h6>
+                                    <small class="text-muted">حمامات</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <h6 class="mb-0">@property.Area</h6>
+                                <small class="text-muted">م²</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <span class="text-muted">السعر الشهري:</span>
+                                <h5 class="mb-0 text-primary">@property.MonthlyRent.ToString("N0") جنيه</h5>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">المالك:</small>
+                                <div>@property.Owner.FirstName @property.Owner.LastName</div>
+                            </div>
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(property.Description))
+                        {
+                            <p class="text-muted small">
+                                @(property.Description.Length > 100 ? property.Description.Substring(0, 100) + "..." : property.Description)
+                            </p>
+                        }
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <div class="d-flex justify-content-between">
+                            <a href="/Properties/Details/@property.Id" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>
+                                عرض
+                            </a>
+                            <div class="btn-group">
+                                <a href="/Properties/Edit/@property.Id" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                @if (property.Status == "Available")
+                                {
+                                    <a href="/Contracts/Create?propertyId=@property.Id" class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-file-contract"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-building text-muted mb-3" style="font-size: 3rem;"></i>
+                <h5 class="text-muted">لا يوجد عقارات مسجلة</h5>
+                <p class="text-muted">ابدأ بإضافة أول عقار للنظام</p>
+                <a href="/Properties/Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    إضافة عقار جديد
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="?page=@i&search=@ViewBag.Search">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+<script>
+function filterByType(type) {
+    const url = new URL(window.location);
+    if (type) {
+        url.searchParams.set('type', type);
+    } else {
+        url.searchParams.delete('type');
+    }
+    window.location = url;
+}
+
+function filterByStatus(status) {
+    const url = new URL(window.location);
+    if (status) {
+        url.searchParams.set('status', status);
+    } else {
+        url.searchParams.delete('status');
+    }
+    window.location = url;
+}
+</script>

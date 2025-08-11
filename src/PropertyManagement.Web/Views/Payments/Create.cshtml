@@ -1,0 +1,264 @@
+@model PropertyManagement.Core.Entities.Payment
+@{
+    ViewData["Title"] = "تسجيل دفعة جديدة";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="/Payments">المدفوعات</a></li>
+                <li class="breadcrumb-item active">تسجيل دفعة جديدة</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-money-bill-wave me-2"></i>
+            تسجيل دفعة جديدة
+        </h1>
+    </div>
+</div>
+
+<form asp-action="Create" method="post">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Payment Basic Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">معلومات الدفعة</h6>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ReceiptNumber" class="form-label">رقم الإيصال <span class="text-danger">*</span></label>
+                            <input asp-for="ReceiptNumber" class="form-control" placeholder="مثال: RCP-2024-001">
+                            <span asp-validation-for="ReceiptNumber" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PaymentType" class="form-label">نوع الدفعة <span class="text-danger">*</span></label>
+                            <select asp-for="PaymentType" class="form-select">
+                                <option value="">اختر نوع الدفعة</option>
+                                <option value="Rent">إيجار شهري</option>
+                                <option value="SecurityDeposit">تأمين</option>
+                                <option value="Maintenance">صيانة</option>
+                                <option value="Utilities">مرافق</option>
+                                <option value="Other">أخرى</option>
+                            </select>
+                            <span asp-validation-for="PaymentType" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ContractId" class="form-label">العقد <span class="text-danger">*</span></label>
+                        <select asp-for="ContractId" class="form-select" asp-items="ViewBag.Contracts" id="contractSelect">
+                            <option value="">اختر العقد</option>
+                        </select>
+                        <span asp-validation-for="ContractId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Contract Details Display -->
+                    <div id="contractDetails" class="alert alert-info" style="display: none;">
+                        <h6>تفاصيل العقد المختار:</h6>
+                        <div id="contractInfo"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Details -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">تفاصيل المبلغ والتواريخ</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Amount" class="form-label">المبلغ (جنيه) <span class="text-danger">*</span></label>
+                            <input asp-for="Amount" type="number" step="0.01" class="form-control" placeholder="5000">
+                            <span asp-validation-for="Amount" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DueDate" class="form-label">تاريخ الاستحقاق <span class="text-danger">*</span></label>
+                            <input asp-for="DueDate" type="date" class="form-control">
+                            <span asp-validation-for="DueDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PaymentDate" class="form-label">تاريخ الدفع</label>
+                            <input asp-for="PaymentDate" type="date" class="form-control">
+                            <span asp-validation-for="PaymentDate" class="text-danger"></span>
+                            <small class="form-text text-muted">اتركه فارغاً إذا لم يتم الدفع بعد</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label">حالة الدفعة <span class="text-danger">*</span></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Pending">معلق</option>
+                                <option value="Paid">مدفوع</option>
+                                <option value="Overdue">متأخر</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">طريقة الدفع</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PaymentMethod" class="form-label">طريقة الدفع</label>
+                            <select asp-for="PaymentMethod" class="form-select">
+                                <option value="">اختر طريقة الدفع</option>
+                                <option value="Cash">نقداً</option>
+                                <option value="BankTransfer">تحويل بنكي</option>
+                                <option value="Check">شيك</option>
+                                <option value="CreditCard">بطاقة ائتمان</option>
+                                <option value="MobileWallet">محفظة إلكترونية</option>
+                            </select>
+                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TransactionReference" class="form-label">مرجع المعاملة</label>
+                            <input asp-for="TransactionReference" class="form-control" placeholder="رقم الشيك أو رقم التحويل">
+                            <span asp-validation-for="TransactionReference" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">ملاحظات إضافية</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label">ملاحظات</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="أي ملاحظات إضافية حول هذه الدفعة..."></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">إجراءات سريعة</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="setCurrentDate()">
+                            <i class="fas fa-calendar me-1"></i>
+                            تعيين تاريخ اليوم
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="markAsPaid()">
+                            <i class="fas fa-check me-1"></i>
+                            تحديد كمدفوع
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Summary -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">ملخص الدفعة</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>المبلغ:</span>
+                        <span id="summaryAmount">0 جنيه</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>النوع:</span>
+                        <span id="summaryType">-</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>الحالة:</span>
+                        <span id="summaryStatus">-</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>الإجمالي:</span>
+                        <span id="summaryTotal" class="text-primary">0 جنيه</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            حفظ الدفعة
+                        </button>
+                        <a href="/Payments" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للقائمة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Set current date
+        function setCurrentDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('PaymentDate').value = today;
+        }
+
+        // Mark as paid
+        function markAsPaid() {
+            document.getElementById('Status').value = 'Paid';
+            setCurrentDate();
+            updateSummary();
+        }
+
+        // Update summary
+        function updateSummary() {
+            const amount = parseFloat(document.getElementById('Amount').value) || 0;
+            const type = document.getElementById('PaymentType').value;
+            const status = document.getElementById('Status').value;
+
+            document.getElementById('summaryAmount').textContent = amount.toLocaleString() + ' جنيه';
+            document.getElementById('summaryType').textContent = type || '-';
+            document.getElementById('summaryStatus').textContent = status || '-';
+            document.getElementById('summaryTotal').textContent = amount.toLocaleString() + ' جنيه';
+        }
+
+        // Contract selection handler
+        document.getElementById('contractSelect').addEventListener('change', function() {
+            const contractId = this.value;
+            if (contractId) {
+                // Here you would typically make an AJAX call to get contract details
+                document.getElementById('contractDetails').style.display = 'block';
+                document.getElementById('contractInfo').innerHTML = 'تم اختيار العقد - سيتم تحديث التفاصيل تلقائياً';
+            } else {
+                document.getElementById('contractDetails').style.display = 'none';
+            }
+        });
+
+        // Event listeners
+        document.getElementById('Amount').addEventListener('input', updateSummary);
+        document.getElementById('PaymentType').addEventListener('change', updateSummary);
+        document.getElementById('Status').addEventListener('change', updateSummary);
+
+        // Initialize
+        updateSummary();
+    </script>
+}

@@ -1,0 +1,261 @@
+@model PropertyManagement.Web.Models.PropertiesReportViewModel
+@{
+    ViewData["Title"] = "تقرير العقارات";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-home me-2"></i>
+            تقرير العقارات
+        </h1>
+        <div class="btn-group" role="group">
+            <a href="/Reports" class="btn btn-secondary">
+                <i class="fas fa-arrow-right me-1"></i>
+                العودة للتقارير
+            </a>
+            <button class="btn btn-success" onclick="window.print()">
+                <i class="fas fa-print me-1"></i>
+                طباعة
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                إجمالي العقارات
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalProperties</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-home fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                العقارات المؤجرة
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.RentedProperties</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-key fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                معدل الإشغال
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.OccupancyRate.ToString("F1")%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                متوسط الإيجار
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.AverageRent.ToString("C") EGP</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Properties Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">تفاصيل العقارات</h6>
+        </div>
+        <div class="card-body">
+            @if (Model.Properties.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>العقار</th>
+                                <th>المالك</th>
+                                <th>النوع</th>
+                                <th>المساحة</th>
+                                <th>الإيجار الشهري</th>
+                                <th>الحالة</th>
+                                <th>المستأجر الحالي</th>
+                                <th>تاريخ الإنشاء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var property in Model.Properties)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@property.Title</strong><br>
+                                        <small class="text-muted">@property.Address</small>
+                                    </td>
+                                    <td>
+                                        @if (property.Owner != null)
+                                        {
+                                            <span>@property.Owner.FirstName @property.Owner.LastName</span><br>
+                                            <small class="text-muted">@property.Owner.Phone</small>
+                                        }
+                                    </td>
+                                    <td>@property.PropertyType</td>
+                                    <td>@property.Area م²</td>
+                                    <td>@property.MonthlyRent.ToString("C") EGP</td>
+                                    <td>
+                                        @switch (property.Status)
+                                        {
+                                            case "Available":
+                                                <span class="badge bg-success">متاح</span>
+                                                break;
+                                            case "Rented":
+                                                <span class="badge bg-info">مؤجر</span>
+                                                break;
+                                            case "Maintenance":
+                                                <span class="badge bg-warning">صيانة</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">@property.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @{
+                                            var activeContract = property.Contracts?.FirstOrDefault(c => c.IsActive);
+                                        }
+                                        @if (activeContract?.Tenant != null)
+                                        {
+                                            <span>@activeContract.Tenant.FirstName @activeContract.Tenant.LastName</span><br>
+                                            <small class="text-muted">@activeContract.Tenant.Phone</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">لا يوجد</span>
+                                        }
+                                    </td>
+                                    <td>@property.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-home fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">لا توجد عقارات</h5>
+                    <p class="text-muted">لم يتم العثور على أي عقارات في النظام.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Performance Analysis -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">تحليل الأداء</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>إجمالي الإيرادات المحتملة</td>
+                                    <td class="text-end"><strong>@Model.TotalPotentialRevenue.ToString("C") EGP</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>الإيرادات الفعلية</td>
+                                    <td class="text-end"><span class="text-success">@Model.ActualRevenue.ToString("C") EGP</span></td>
+                                </tr>
+                                <tr>
+                                    <td>كفاءة الإيرادات</td>
+                                    <td class="text-end"><strong>@Model.RevenueEfficiency.ToString("F1")%</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>متوسط الإيجار</td>
+                                    <td class="text-end">@Model.AverageRent.ToString("C") EGP</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">توزيع العقارات</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="propertyStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Property Status Chart
+        const ctx = document.getElementById('propertyStatusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['متاح', 'مؤجر', 'صيانة'],
+                datasets: [{
+                    data: [@Model.AvailableProperties, @Model.RentedProperties, @Model.MaintenanceProperties],
+                    backgroundColor: ['#28a745', '#17a2b8', '#ffc107']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+}

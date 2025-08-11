@@ -1,0 +1,318 @@
+@model List<PropertyManagement.Core.Entities.MaintenanceRequest>
+@{
+    ViewData["Title"] = "إدارة الصيانة";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-tools me-2"></i>
+            إدارة الصيانة
+        </h1>
+        <a href="/Maintenance/Create" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>
+            طلب صيانة جديد
+        </a>
+    </div>
+
+    <!-- Filter Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                إجمالي الطلبات
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                قيد الانتظار
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(m => m.Status == PropertyManagement.Core.Entities.MaintenanceStatus.Submitted)</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                قيد التنفيذ
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(m => m.Status == PropertyManagement.Core.Entities.MaintenanceStatus.InProgress)</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cog fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                مكتملة
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(m => m.Status == PropertyManagement.Core.Entities.MaintenanceStatus.Completed)</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">فلترة النتائج</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">الحالة</label>
+                    <select name="status" class="form-select">
+                        <option value="">جميع الحالات</option>
+                        <option value="1" selected="@(ViewBag.Status?.ToString() == "1")">مقدم</option>
+                        <option value="2" selected="@(ViewBag.Status?.ToString() == "2")">قيد التنفيذ</option>
+                        <option value="3" selected="@(ViewBag.Status?.ToString() == "3")">مكتمل</option>
+                        <option value="4" selected="@(ViewBag.Status?.ToString() == "4")">ملغي</option>
+                        <option value="5" selected="@(ViewBag.Status?.ToString() == "5")">معلق</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">الأولوية</label>
+                    <select name="priority" class="form-select">
+                        <option value="">جميع الأولويات</option>
+                        <option value="1" selected="@(ViewBag.Priority?.ToString() == "1")">منخفضة</option>
+                        <option value="2" selected="@(ViewBag.Priority?.ToString() == "2")">متوسطة</option>
+                        <option value="3" selected="@(ViewBag.Priority?.ToString() == "3")">عالية</option>
+                        <option value="4" selected="@(ViewBag.Priority?.ToString() == "4")">طارئة</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">عدد النتائج</label>
+                    <select name="pageSize" class="form-select">
+                        <option value="10" selected="@(ViewBag.PageSize?.ToString() == "10")">10</option>
+                        <option value="25" selected="@(ViewBag.PageSize?.ToString() == "25")">25</option>
+                        <option value="50" selected="@(ViewBag.PageSize?.ToString() == "50")">50</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i>
+                        بحث
+                    </button>
+                    <a href="/Maintenance" class="btn btn-secondary">
+                        <i class="fas fa-undo me-1"></i>
+                        إعادة تعيين
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Maintenance Requests Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">طلبات الصيانة</h6>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>العنوان</th>
+                                <th>العقار</th>
+                                <th>المستأجر</th>
+                                <th>الفئة</th>
+                                <th>الأولوية</th>
+                                <th>الحالة</th>
+                                <th>تاريخ الطلب</th>
+                                <th>التكلفة المقدرة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in Model)
+                            {
+                                <tr>
+                                    <td>@request.RequestNumber</td>
+                                    <td>@request.Title</td>
+                                    <td>
+                                        @if (request.Property != null)
+                                        {
+                                            <span>@request.Property.Title</span><br>
+                                            <small class="text-muted">@request.Property.Address</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (request.Tenant != null)
+                                        {
+                                            <span>@request.Tenant.FirstName @request.Tenant.LastName</span><br>
+                                            <small class="text-muted">@request.Tenant.Phone</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">غير محدد</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (request.Category)
+                                        {
+                                            case PropertyManagement.Core.Entities.MaintenanceCategory.Plumbing:
+                                                <span class="badge bg-info">سباكة</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenanceCategory.Electrical:
+                                                <span class="badge bg-warning">كهرباء</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenanceCategory.HVAC:
+                                                <span class="badge bg-primary">تكييف</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenanceCategory.Painting:
+                                                <span class="badge bg-secondary">دهان</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-light text-dark">@request.Category</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (request.Priority)
+                                        {
+                                            case PropertyManagement.Core.Entities.MaintenancePriority.Low:
+                                                <span class="badge bg-success">منخفضة</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenancePriority.Medium:
+                                                <span class="badge bg-warning">متوسطة</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenancePriority.High:
+                                                <span class="badge bg-danger">عالية</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenancePriority.Emergency:
+                                                <span class="badge bg-dark">طارئة</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (request.Status)
+                                        {
+                                            case PropertyManagement.Core.Entities.MaintenanceStatus.Submitted:
+                                                <span class="badge bg-warning">مقدم</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenanceStatus.InProgress:
+                                                <span class="badge bg-info">قيد التنفيذ</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenanceStatus.Completed:
+                                                <span class="badge bg-success">مكتمل</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenanceStatus.Cancelled:
+                                                <span class="badge bg-secondary">ملغي</span>
+                                                break;
+                                            case PropertyManagement.Core.Entities.MaintenanceStatus.OnHold:
+                                                <span class="badge bg-dark">معلق</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@request.RequestDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (request.EstimatedCost.HasValue)
+                                        {
+                                            <span>@request.EstimatedCost.Value.ToString("C") @request.Currency</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">غير محدد</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/Maintenance/Details/@request.Id" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="/Maintenance/Edit/@request.Id" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            @if (ViewBag.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)&status=@ViewBag.Status&priority=@ViewBag.Priority&pageSize=@ViewBag.PageSize">السابق</a>
+                                </li>
+                            }
+
+                            @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="?page=@i&status=@ViewBag.Status&priority=@ViewBag.Priority&pageSize=@ViewBag.PageSize">@i</a>
+                                </li>
+                            }
+
+                            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)&status=@ViewBag.Status&priority=@ViewBag.Priority&pageSize=@ViewBag.PageSize">التالي</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">لا توجد طلبات صيانة</h5>
+                    <p class="text-muted">لم يتم العثور على أي طلبات صيانة تطابق المعايير المحددة.</p>
+                    <a href="/Maintenance/Create" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>
+                        إنشاء طلب صيانة جديد
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

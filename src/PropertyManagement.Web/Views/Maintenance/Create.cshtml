@@ -1,0 +1,216 @@
+@model PropertyManagement.Core.Entities.MaintenanceRequest
+@{
+    ViewData["Title"] = "طلب صيانة جديد";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-plus me-2"></i>
+            طلب صيانة جديد
+        </h1>
+        <a href="/Maintenance" class="btn btn-secondary">
+            <i class="fas fa-arrow-right me-1"></i>
+            العودة للقائمة
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">بيانات طلب الصيانة</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Title" class="form-label">عنوان الطلب <span class="text-danger">*</span></label>
+                                <input asp-for="Title" class="form-control" placeholder="مثال: إصلاح تسريب في الحمام" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PropertyId" class="form-label">العقار <span class="text-danger">*</span></label>
+                                <select asp-for="PropertyId" class="form-select">
+                                    <option value="">اختر العقار</option>
+                                    @if (ViewBag.Properties != null)
+                                    {
+                                        @foreach (var property in ViewBag.Properties)
+                                        {
+                                            <option value="@property.Id">@property.Title - @property.Address</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="PropertyId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Category" class="form-label">الفئة <span class="text-danger">*</span></label>
+                                <select asp-for="Category" class="form-select">
+                                    <option value="">اختر الفئة</option>
+                                    <option value="1">سباكة</option>
+                                    <option value="2">كهرباء</option>
+                                    <option value="3">تكييف</option>
+                                    <option value="4">دهان</option>
+                                    <option value="5">أرضيات</option>
+                                    <option value="6">أجهزة</option>
+                                    <option value="7">أمان</option>
+                                    <option value="8">تنظيف</option>
+                                    <option value="9">حدائق</option>
+                                    <option value="10">إنشائية</option>
+                                    <option value="11">أخرى</option>
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Priority" class="form-label">الأولوية <span class="text-danger">*</span></label>
+                                <select asp-for="Priority" class="form-select">
+                                    <option value="">اختر الأولوية</option>
+                                    <option value="1">منخفضة</option>
+                                    <option value="2">متوسطة</option>
+                                    <option value="3">عالية</option>
+                                    <option value="4">طارئة</option>
+                                </select>
+                                <span asp-validation-for="Priority" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TenantId" class="form-label">المستأجر</label>
+                                <select asp-for="TenantId" class="form-select">
+                                    <option value="">اختر المستأجر (اختياري)</option>
+                                    @if (ViewBag.Tenants != null)
+                                    {
+                                        @foreach (var tenant in ViewBag.Tenants)
+                                        {
+                                            <option value="@tenant.Id">@tenant.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="TenantId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EstimatedCost" class="form-label">التكلفة المقدرة</label>
+                                <div class="input-group">
+                                    <input asp-for="EstimatedCost" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                                    <span class="input-group-text">جنيه</span>
+                                </div>
+                                <span asp-validation-for="EstimatedCost" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AssignedTo" class="form-label">المسؤول عن التنفيذ</label>
+                                <input asp-for="AssignedTo" class="form-control" placeholder="اسم الفني أو الشركة" />
+                                <span asp-validation-for="AssignedTo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AssignedToPhone" class="form-label">رقم هاتف المسؤول</label>
+                                <input asp-for="AssignedToPhone" class="form-control" placeholder="+201234567890" />
+                                <span asp-validation-for="AssignedToPhone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">وصف المشكلة <span class="text-danger">*</span></label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="اكتب وصفاً مفصلاً للمشكلة التي تحتاج إصلاح..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="InternalNotes" class="form-label">ملاحظات داخلية</label>
+                            <textarea asp-for="InternalNotes" class="form-control" rows="3" placeholder="ملاحظات للاستخدام الداخلي فقط..."></textarea>
+                            <span asp-validation-for="InternalNotes" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ScheduledDate" class="form-label">تاريخ الجدولة</label>
+                                <input asp-for="ScheduledDate" class="form-control" type="datetime-local" />
+                                <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Currency" class="form-label">العملة</label>
+                                <select asp-for="Currency" class="form-select">
+                                    <option value="EGP" selected>جنيه مصري (EGP)</option>
+                                    <option value="USD">دولار أمريكي (USD)</option>
+                                    <option value="EUR">يورو (EUR)</option>
+                                </select>
+                                <span asp-validation-for="Currency" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/Maintenance" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i>
+                                إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>
+                                حفظ طلب الصيانة
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">إرشادات</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-1"></i> نصائح مهمة:</h6>
+                        <ul class="mb-0">
+                            <li>اكتب وصفاً واضحاً ومفصلاً للمشكلة</li>
+                            <li>حدد الأولوية بناءً على خطورة المشكلة</li>
+                            <li>أضف التكلفة المقدرة إن أمكن</li>
+                            <li>حدد المسؤول عن التنفيذ مسبقاً</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle me-1"></i> الأولويات:</h6>
+                        <ul class="mb-0">
+                            <li><strong>طارئة:</strong> مشاكل تؤثر على السلامة</li>
+                            <li><strong>عالية:</strong> مشاكل تؤثر على الاستخدام</li>
+                            <li><strong>متوسطة:</strong> مشاكل عامة</li>
+                            <li><strong>منخفضة:</strong> تحسينات وصيانة دورية</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Auto-populate tenant based on selected property
+        $('#PropertyId').change(function() {
+            var propertyId = $(this).val();
+            if (propertyId) {
+                // You can add AJAX call here to get active tenant for the property
+                // For now, we'll leave it as manual selection
+            }
+        });
+
+        // Set default currency
+        if (!$('#Currency').val()) {
+            $('#Currency').val('EGP');
+        }
+
+        // Set default priority
+        if (!$('#Priority').val()) {
+            $('#Priority').val('2'); // Medium priority
+        }
+    </script>
+}

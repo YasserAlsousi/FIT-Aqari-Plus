@@ -1,0 +1,228 @@
+@model PropertyManagement.Core.Entities.Property
+@{
+    ViewData["Title"] = "تعديل العقار";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="/Properties">العقارات</a></li>
+                <li class="breadcrumb-item"><a href="/Properties/Details/@Model.Id">@Model.Title</a></li>
+                <li class="breadcrumb-item active">تعديل</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-building me-2"></i>
+            تعديل العقار
+        </h1>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="CreatedAt" type="hidden" />
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Basic Information -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">المعلومات الأساسية</h6>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">عنوان العقار <span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control">
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">وصف العقار</label>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PropertyType" class="form-label">نوع العقار <span class="text-danger">*</span></label>
+                            <select asp-for="PropertyType" class="form-select">
+                                <option value="">اختر نوع العقار</option>
+                                <option value="Apartment">شقة</option>
+                                <option value="Villa">فيلا</option>
+                                <option value="Office">مكتب</option>
+                                <option value="Shop">محل تجاري</option>
+                                <option value="Warehouse">مخزن</option>
+                            </select>
+                            <span asp-validation-for="PropertyType" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label">حالة العقار <span class="text-danger">*</span></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Available">متاح للإيجار</option>
+                                <option value="Rented">مؤجر</option>
+                                <option value="Maintenance">تحت الصيانة</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">العنوان <span class="text-danger">*</span></label>
+                        <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Details -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">تفاصيل العقار</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Area" class="form-label">المساحة (م²) <span class="text-danger">*</span></label>
+                            <input asp-for="Area" type="number" class="form-control">
+                            <span asp-validation-for="Area" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Bedrooms" class="form-label">عدد غرف النوم</label>
+                            <input asp-for="Bedrooms" type="number" class="form-control">
+                            <span asp-validation-for="Bedrooms" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Bathrooms" class="form-label">عدد الحمامات</label>
+                            <input asp-for="Bathrooms" type="number" class="form-control">
+                            <span asp-validation-for="Bathrooms" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Floor" class="form-label">الطابق</label>
+                            <input asp-for="Floor" type="number" class="form-control">
+                            <span asp-validation-for="Floor" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">المرافق</label>
+                            <div class="form-check">
+                                <input asp-for="HasParking" class="form-check-input" type="checkbox">
+                                <label asp-for="HasParking" class="form-check-label">موقف سيارة</label>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="HasElevator" class="form-check-input" type="checkbox">
+                                <label asp-for="HasElevator" class="form-check-label">مصعد</label>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="HasBalcony" class="form-check-input" type="checkbox">
+                                <label asp-for="HasBalcony" class="form-check-label">شرفة</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Information -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">المعلومات المالية</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="MonthlyRent" class="form-label">الإيجار الشهري (جنيه) <span class="text-danger">*</span></label>
+                            <input asp-for="MonthlyRent" type="number" step="0.01" class="form-control">
+                            <span asp-validation-for="MonthlyRent" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SecurityDeposit" class="form-label">التأمين (جنيه)</label>
+                            <input asp-for="SecurityDeposit" type="number" step="0.01" class="form-control">
+                            <span asp-validation-for="SecurityDeposit" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Owner Selection -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">المالك</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="OwnerId" class="form-label">اختر المالك <span class="text-danger">*</span></label>
+                        <select asp-for="OwnerId" class="form-select" asp-items="ViewBag.Owners">
+                            <option value="">اختر المالك</option>
+                        </select>
+                        <span asp-validation-for="OwnerId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">معلومات إضافية</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">تاريخ الإنشاء:</label>
+                        <div>@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+                    </div>
+
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label text-muted">آخر تحديث:</label>
+                            <div>@Model.UpdatedAt.Value.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">عدد العقود:</label>
+                        <div>@Model.Contracts.Count عقد</div>
+                    </div>
+
+                    @if (Model.Contracts.Any(c => c.IsActive))
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            هذا العقار له عقد نشط حالياً
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            حفظ التغييرات
+                        </button>
+                        <a href="/Properties/Details/@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للتفاصيل
+                        </a>
+                        <a href="/Properties" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>
+                            العودة للقائمة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

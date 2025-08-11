@@ -1,0 +1,312 @@
+@model PropertyManagement.Core.Entities.Payment
+@{
+    ViewData["Title"] = "تعديل الدفعة";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="/Payments">المدفوعات</a></li>
+                <li class="breadcrumb-item"><a href="/Payments/Details/@Model.Id">@Model.ReceiptNumber</a></li>
+                <li class="breadcrumb-item active">تعديل</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-money-bill-wave me-2"></i>
+            تعديل الدفعة
+        </h1>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="CreatedAt" type="hidden" />
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Payment Basic Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">معلومات الدفعة</h6>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ReceiptNumber" class="form-label">رقم الإيصال <span class="text-danger">*</span></label>
+                            <input asp-for="ReceiptNumber" class="form-control" readonly>
+                            <span asp-validation-for="ReceiptNumber" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PaymentType" class="form-label">نوع الدفعة <span class="text-danger">*</span></label>
+                            <select asp-for="PaymentType" class="form-select">
+                                <option value="">اختر نوع الدفعة</option>
+                                <option value="Rent">إيجار شهري</option>
+                                <option value="SecurityDeposit">تأمين</option>
+                                <option value="Maintenance">صيانة</option>
+                                <option value="Utilities">مرافق</option>
+                                <option value="Other">أخرى</option>
+                            </select>
+                            <span asp-validation-for="PaymentType" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ContractId" class="form-label">العقد <span class="text-danger">*</span></label>
+                        <select asp-for="ContractId" class="form-select" asp-items="ViewBag.Contracts">
+                            <option value="">اختر العقد</option>
+                        </select>
+                        <span asp-validation-for="ContractId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Details -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">تفاصيل المبلغ والتواريخ</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Amount" class="form-label">المبلغ (جنيه) <span class="text-danger">*</span></label>
+                            <input asp-for="Amount" type="number" step="0.01" class="form-control" id="amountInput">
+                            <span asp-validation-for="Amount" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DueDate" class="form-label">تاريخ الاستحقاق <span class="text-danger">*</span></label>
+                            <input asp-for="DueDate" type="date" class="form-control">
+                            <span asp-validation-for="DueDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PaymentDate" class="form-label">تاريخ الدفع</label>
+                            <input asp-for="PaymentDate" type="date" class="form-control">
+                            <span asp-validation-for="PaymentDate" class="text-danger"></span>
+                            <small class="form-text text-muted">اتركه فارغاً إذا لم يتم الدفع بعد</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label">حالة الدفعة <span class="text-danger">*</span></label>
+                            <select asp-for="Status" class="form-select" id="statusSelect">
+                                <option value="Pending">معلق</option>
+                                <option value="Paid">مدفوع</option>
+                                <option value="Overdue">متأخر</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">طريقة الدفع</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PaymentMethod" class="form-label">طريقة الدفع</label>
+                            <select asp-for="PaymentMethod" class="form-select">
+                                <option value="">اختر طريقة الدفع</option>
+                                <option value="Cash">نقداً</option>
+                                <option value="BankTransfer">تحويل بنكي</option>
+                                <option value="Check">شيك</option>
+                                <option value="CreditCard">بطاقة ائتمان</option>
+                                <option value="MobileWallet">محفظة إلكترونية</option>
+                            </select>
+                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TransactionReference" class="form-label">مرجع المعاملة</label>
+                            <input asp-for="TransactionReference" class="form-control">
+                            <span asp-validation-for="TransactionReference" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">ملاحظات إضافية</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label">ملاحظات</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Payment Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">معلومات الدفعة</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">رقم الإيصال:</label>
+                        <div class="fw-bold">@Model.ReceiptNumber</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">تاريخ الإنشاء:</label>
+                        <div>@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+                    </div>
+
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label text-muted">آخر تحديث:</label>
+                            <div>@Model.UpdatedAt.Value.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">الحالة الحالية:</label>
+                        @{
+                            var statusClass = Model.Status switch
+                            {
+                                "Paid" => "success",
+                                "Pending" => "warning",
+                                "Overdue" => "danger",
+                                _ => "secondary"
+                            };
+                            var statusText = Model.Status switch
+                            {
+                                "Paid" => "مدفوع",
+                                "Pending" => "معلق",
+                                "Overdue" => "متأخر",
+                                _ => Model.Status
+                            };
+                        }
+                        <span class="badge bg-@statusClass">@statusText</span>
+                    </div>
+
+                    @if (Model.Status == "Paid")
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            تم دفع هذه الدفعة بالفعل
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Contract Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">معلومات العقد</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>@Model.Contract.ContractNumber</strong>
+                    </div>
+                    <div class="text-muted mb-2">@Model.Contract.Property.Title</div>
+                    <div class="mb-3">@Model.Contract.Tenant.FirstName @Model.Contract.Tenant.LastName</div>
+                    <div class="d-grid">
+                        <a href="/Contracts/Details/@Model.Contract.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>
+                            عرض تفاصيل العقد
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Summary -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">ملخص الدفعة</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>المبلغ:</span>
+                        <span id="summaryAmount">@Model.Amount.ToString("N0") جنيه</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>النوع:</span>
+                        <span id="summaryType">@Model.PaymentType</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>الحالة:</span>
+                        <span id="summaryStatus">@statusText</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>الإجمالي:</span>
+                        <span id="summaryTotal" class="text-primary">@Model.Amount.ToString("N0") جنيه</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            حفظ التغييرات
+                        </button>
+                        <a href="/Payments/Details/@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للتفاصيل
+                        </a>
+                        <a href="/Payments" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>
+                            العودة للقائمة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Update summary
+        function updateSummary() {
+            const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+            const type = document.getElementById('PaymentType').value;
+            const status = document.getElementById('statusSelect').value;
+
+            document.getElementById('summaryAmount').textContent = amount.toLocaleString() + ' جنيه';
+            document.getElementById('summaryType').textContent = type || '-';
+            
+            let statusText = status;
+            switch(status) {
+                case 'Paid': statusText = 'مدفوع'; break;
+                case 'Pending': statusText = 'معلق'; break;
+                case 'Overdue': statusText = 'متأخر'; break;
+            }
+            document.getElementById('summaryStatus').textContent = statusText;
+            document.getElementById('summaryTotal').textContent = amount.toLocaleString() + ' جنيه';
+        }
+
+        // Auto-set payment date when status is changed to Paid
+        document.getElementById('statusSelect').addEventListener('change', function() {
+            if (this.value === 'Paid' && !document.getElementById('PaymentDate').value) {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('PaymentDate').value = today;
+            }
+            updateSummary();
+        });
+
+        // Event listeners
+        document.getElementById('amountInput').addEventListener('input', updateSummary);
+        document.getElementById('PaymentType').addEventListener('change', updateSummary);
+
+        // Initialize
+        updateSummary();
+    </script>
+}

@@ -1,0 +1,306 @@
+@model PropertyManagement.Web.Models.ReportsViewModel
+@{
+    ViewData["Title"] = "التقارير والإحصائيات";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-chart-bar me-2"></i>
+            التقارير والإحصائيات
+        </h1>
+        <div class="btn-group" role="group">
+            <a href="/Reports/Financial" class="btn btn-primary">
+                <i class="fas fa-dollar-sign me-1"></i>
+                التقرير المالي
+            </a>
+            <a href="/Reports/Properties" class="btn btn-info">
+                <i class="fas fa-home me-1"></i>
+                تقرير العقارات
+            </a>
+            <a href="/Reports/Maintenance" class="btn btn-warning">
+                <i class="fas fa-tools me-1"></i>
+                تقرير الصيانة
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                إجمالي العقارات
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalProperties</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-home fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                معدل الإشغال
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.OccupancyRate.ToString("F1")%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                الإيرادات الشهرية
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.MonthlyRevenue.ToString("C") EGP</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                طلبات الصيانة النشطة
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@(Model.PendingMaintenanceRequests + Model.InProgressMaintenanceRequests)</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tools fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <!-- Property Status Chart -->
+        <div class="col-xl-6 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">توزيع حالة العقارات</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="propertyStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Property Type Distribution -->
+        <div class="col-xl-6 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">توزيع أنواع العقارات</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="propertyTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Revenue Chart -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">الإيرادات الشهرية (آخر 12 شهر)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Tables -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">إحصائيات العقارات</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>إجمالي العقارات</td>
+                                    <td class="text-end"><strong>@Model.TotalProperties</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>العقارات المتاحة</td>
+                                    <td class="text-end"><span class="text-success">@Model.AvailableProperties</span></td>
+                                </tr>
+                                <tr>
+                                    <td>العقارات المؤجرة</td>
+                                    <td class="text-end"><span class="text-info">@Model.RentedProperties</span></td>
+                                </tr>
+                                <tr>
+                                    <td>العقارات تحت الصيانة</td>
+                                    <td class="text-end"><span class="text-warning">@Model.MaintenanceProperties</span></td>
+                                </tr>
+                                <tr>
+                                    <td>معدل الإشغال</td>
+                                    <td class="text-end"><strong>@Model.OccupancyRate.ToString("F1")%</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">إحصائيات المدفوعات</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>إجمالي المدفوعات</td>
+                                    <td class="text-end"><strong>@Model.TotalPayments</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>المدفوعات المسددة</td>
+                                    <td class="text-end"><span class="text-success">@Model.PaidPayments</span></td>
+                                </tr>
+                                <tr>
+                                    <td>المدفوعات المعلقة</td>
+                                    <td class="text-end"><span class="text-warning">@Model.PendingPayments</span></td>
+                                </tr>
+                                <tr>
+                                    <td>المدفوعات المتأخرة</td>
+                                    <td class="text-end"><span class="text-danger">@Model.OverduePayments</span></td>
+                                </tr>
+                                <tr>
+                                    <td>معدل النجاح</td>
+                                    <td class="text-end"><strong>@Model.PaymentSuccessRate.ToString("F1")%</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Property Status Chart
+        const propertyStatusCtx = document.getElementById('propertyStatusChart').getContext('2d');
+        new Chart(propertyStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['متاح', 'مؤجر', 'صيانة'],
+                datasets: [{
+                    data: [@Model.AvailableProperties, @Model.RentedProperties, @Model.MaintenanceProperties],
+                    backgroundColor: ['#28a745', '#17a2b8', '#ffc107']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Property Type Chart
+        const propertyTypeCtx = document.getElementById('propertyTypeChart').getContext('2d');
+        new Chart(propertyTypeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [@Html.Raw(string.Join(",", Model.PropertyTypeDistribution.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                    data: [@Html.Raw(string.Join(",", Model.PropertyTypeDistribution.Values))],
+                    backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Monthly Revenue Chart
+        const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart').getContext('2d');
+        new Chart(monthlyRevenueCtx, {
+            type: 'line',
+            data: {
+                labels: [@Html.Raw(string.Join(",", Model.MonthlyRevenueChart.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                    label: 'الإيرادات (جنيه)',
+                    data: [@Html.Raw(string.Join(",", Model.MonthlyRevenueChart.Values))],
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' جنيه';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+}

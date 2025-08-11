@@ -1,0 +1,392 @@
+@model PropertyManagement.Core.Entities.Contract
+@{
+    ViewData["Title"] = "تفاصيل العقد";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="/Contracts">العقود</a></li>
+                <li class="breadcrumb-item active">@Model.ContractNumber</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-file-contract me-2"></i>
+                    عقد رقم: @Model.ContractNumber
+                </h1>
+                <p class="text-muted mb-0">@Model.Property.Title</p>
+            </div>
+            <div class="btn-group">
+                <a href="/Contracts/Edit/@Model.Id" class="btn btn-warning">
+                    <i class="fas fa-edit me-2"></i>
+                    تعديل
+                </a>
+                @if (Model.IsActive)
+                {
+                    <a href="/Payments/Create?contractId=@Model.Id" class="btn btn-success">
+                        <i class="fas fa-money-bill me-2"></i>
+                        تسجيل دفعة
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Contract Info -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        معلومات العقد
+                    </h6>
+                    <span class="badge bg-@(Model.IsActive ? "success" : "secondary") fs-6">
+                        @(Model.IsActive ? "نشط" : "منتهي")
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">رقم العقد:</label>
+                        <div class="fw-bold">@Model.ContractNumber</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">تاريخ الإنشاء:</label>
+                        <div>@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">تاريخ بداية العقد:</label>
+                        <div class="fw-bold">@Model.StartDate.ToString("dd/MM/yyyy")</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">تاريخ نهاية العقد:</label>
+                        <div class="fw-bold">@Model.EndDate.ToString("dd/MM/yyyy")</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">مدة العقد:</label>
+                        <div>@((Model.EndDate - Model.StartDate).Days / 30) شهر</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">الأيام المتبقية:</label>
+                        @{
+                            var remainingDays = (Model.EndDate - DateTime.Now).Days;
+                        }
+                        <div class="@(remainingDays < 30 ? "text-warning" : remainingDays < 0 ? "text-danger" : "")">
+                            @(remainingDays > 0 ? remainingDays + " يوم" : "منتهي")
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                @{
+                    var totalDays = (Model.EndDate - Model.StartDate).Days;
+                    var passedDays = (DateTime.Now - Model.StartDate).Days;
+                    var progressPercentage = Math.Max(0, Math.Min(100, (passedDays * 100) / totalDays));
+                }
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="text-muted">تقدم العقد</small>
+                        <small class="text-muted">@progressPercentage.ToString("F0")%</small>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-@(Model.IsActive ? "primary" : "secondary")" 
+                             style="width: @progressPercentage%"></div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Terms))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted">الشروط والأحكام:</label>
+                        <div class="border rounded p-3 bg-light">
+                            @Model.Terms
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Payments History -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        سجل المدفوعات (@Model.Payments.Count)
+                    </h6>
+                    @if (Model.IsActive)
+                    {
+                        <a href="/Payments/Create?contractId=@Model.Id" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i>
+                            تسجيل دفعة جديدة
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.Payments.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>رقم الإيصال</th>
+                                    <th>النوع</th>
+                                    <th>المبلغ</th>
+                                    <th>تاريخ الاستحقاق</th>
+                                    <th>تاريخ الدفع</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var payment in Model.Payments.OrderByDescending(p => p.DueDate))
+                                {
+                                    <tr>
+                                        <td>@payment.ReceiptNumber</td>
+                                        <td>@payment.PaymentType</td>
+                                        <td class="fw-bold text-primary">@payment.Amount.ToString("N0") جنيه</td>
+                                        <td>@payment.DueDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @if (payment.PaymentDate.HasValue)
+                                            {
+                                                @payment.PaymentDate.Value.ToString("dd/MM/yyyy")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">لم يتم الدفع</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @{
+                                                var statusClass = payment.Status switch
+                                                {
+                                                    "Paid" => "success",
+                                                    "Pending" => "warning",
+                                                    "Overdue" => "danger",
+                                                    _ => "secondary"
+                                                };
+                                                var statusText = payment.Status switch
+                                                {
+                                                    "Paid" => "مدفوع",
+                                                    "Pending" => "معلق",
+                                                    "Overdue" => "متأخر",
+                                                    _ => payment.Status
+                                                };
+                                            }
+                                            <span class="badge bg-@statusClass">@statusText</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="/Payments/Details/@payment.Id" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (payment.Status != "Paid")
+                                                {
+                                                    <a href="/Payments/MarkAsPaid/@payment.Id" class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-check"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-money-bill-wave text-muted mb-3" style="font-size: 2rem;"></i>
+                        <h6 class="text-muted">لا يوجد مدفوعات مسجلة</h6>
+                        <p class="text-muted">ابدأ بتسجيل أول دفعة لهذا العقد</p>
+                        @if (Model.IsActive)
+                        {
+                            <a href="/Payments/Create?contractId=@Model.Id" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>
+                                تسجيل دفعة جديدة
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Property Info -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-building me-2"></i>
+                    معلومات العقار
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted">اسم العقار:</label>
+                    <div class="fw-bold">@Model.Property.Title</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">العنوان:</label>
+                    <div>@Model.Property.Address</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">المساحة:</label>
+                    <div>@Model.Property.Area م²</div>
+                </div>
+
+                <div class="d-grid">
+                    <a href="/Properties/Details/@Model.Property.Id" class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>
+                        عرض تفاصيل العقار
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tenant Info -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-user me-2"></i>
+                    معلومات المستأجر
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-sm bg-success text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">@Model.Tenant.FirstName @Model.Tenant.LastName</h6>
+                        <small class="text-muted">@Model.Tenant.Phone</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">البريد الإلكتروني:</label>
+                    <div>@Model.Tenant.Email</div>
+                </div>
+
+                <div class="d-grid">
+                    <a href="/Tenants/Details/@Model.Tenant.Id" class="btn btn-outline-success">
+                        <i class="fas fa-eye me-1"></i>
+                        عرض تفاصيل المستأجر
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-calculator me-2"></i>
+                    الملخص المالي
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted">الإيجار الشهري:</label>
+                    <h5 class="text-primary mb-0">@Model.MonthlyRent.ToString("N0") جنيه</h5>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">مبلغ التأمين:</label>
+                    <div>@Model.SecurityDeposit.ToString("N0") جنيه</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">إجمالي قيمة العقد:</label>
+                    <div class="fw-bold">@((Model.MonthlyRent * ((Model.EndDate - Model.StartDate).Days / 30)).ToString("N0")) جنيه</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">إجمالي المدفوع:</label>
+                    <div class="text-success fw-bold">@Model.Payments.Where(p => p.Status == "Paid").Sum(p => p.Amount).ToString("N0") جنيه</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.IsActive)
+                    {
+                        <a href="/Payments/Create?contractId=@Model.Id" class="btn btn-success">
+                            <i class="fas fa-money-bill me-2"></i>
+                            تسجيل دفعة جديدة
+                        </a>
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#terminateModal">
+                            <i class="fas fa-stop me-2"></i>
+                            إنهاء العقد
+                        </button>
+                    }
+                    <a href="/Contracts/Edit/@Model.Id" class="btn btn-outline-warning">
+                        <i class="fas fa-edit me-2"></i>
+                        تعديل العقد
+                    </a>
+                    <a href="/Contracts" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        العودة للقائمة
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terminate Contract Modal -->
+@if (Model.IsActive)
+{
+    <div class="modal fade" id="terminateModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تأكيد إنهاء العقد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من إنهاء هذا العقد؟</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        سيتم تغيير حالة العقار إلى "متاح" بعد إنهاء العقد
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <form asp-action="Terminate" asp-route-id="@Model.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-warning">إنهاء العقد</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+}
+</style>

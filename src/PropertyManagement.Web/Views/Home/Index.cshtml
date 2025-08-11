@@ -1,0 +1,319 @@
+@model PropertyManagement.Web.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "لوحة التحكم";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-tachometer-alt me-2"></i>
+            لوحة التحكم
+        </h1>
+        <p class="text-muted">نظرة عامة على نشاط النظام</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            إجمالي العقارات
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalProperties</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-building fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            العقارات المتاحة
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.AvailableProperties</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-home fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            العقارات المؤجرة
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.RentedProperties</div>
+                        <div class="mt-2">
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: @Model.OccupancyRate%"></div>
+                            </div>
+                            <small class="text-muted">معدل الإشغال: @Model.OccupancyRate.ToString("F1")%</small>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-key fa-2x text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            الإيرادات الشهرية
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.MonthlyRevenue.ToString("C") EGP</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    إجراءات سريعة
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="/Properties/Create" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>
+                            إضافة عقار جديد
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/Contracts/Create" class="btn btn-success w-100">
+                            <i class="fas fa-file-contract me-2"></i>
+                            إنشاء عقد جديد
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/Payments" class="btn btn-warning w-100">
+                            <i class="fas fa-money-bill me-2"></i>
+                            إدارة المدفوعات
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/Maintenance/Create" class="btn btn-info w-100">
+                            <i class="fas fa-wrench me-2"></i>
+                            طلب صيانة
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="/Owners/Create" class="btn btn-secondary w-100">
+                            <i class="fas fa-user-plus me-2"></i>
+                            إضافة مالك
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/Tenants/Create" class="btn btn-dark w-100">
+                            <i class="fas fa-user-friends me-2"></i>
+                            إضافة مستأجر
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/Reports" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            عرض التقارير
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/Maintenance" class="btn btn-outline-info w-100">
+                            <i class="fas fa-tools me-2"></i>
+                            إدارة الصيانة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Properties and Payments -->
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-home me-2"></i>
+                    العقارات المضافة حديث
+                </h6>
+                <a href="/Properties" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentProperties.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>العقار</th>
+                                    <th>المالك</th>
+                                    <th>السعر</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ الإضافة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var property in Model.RecentProperties)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center"
+                                                     style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-building text-muted"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">@property.Title</h6>
+                                                    <small class="text-muted">@property.Address</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@property.Owner.FirstName @property.Owner.LastName</td>
+                                        <td>@property.MonthlyRent.ToString("N0") جنيه</td>
+                                        <td>
+                                            <span class="badge bg-@(property.Status == "Available" ? "success" : property.Status == "Rented" ? "warning" : "secondary")">
+                                                @(property.Status == "Available" ? "متاح" : property.Status == "Rented" ? "مؤجر" : "صيانة")
+                                            </span>
+                                        </td>
+                                        <td>@property.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-home text-muted mb-3" style="font-size: 3rem;"></i>
+                        <p class="text-muted">لا توجد عقارات حتى الآن</p>
+                        <a href="/Properties/Create" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>
+                            إضافة عقار جديد
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    تنبيهات مهمة
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    @if (Model.OverduePayments > 0)
+                    {
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-danger"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">مدفوعات متأخرة</h6>
+                                    <p class="mb-0 text-muted small">@Model.OverduePayments مدفوعات متأخرة</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <a href="/Payments?status=Overdue" class="btn btn-sm btn-outline-danger">عرض</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (Model.MaintenanceRequests > 0)
+                    {
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-tools text-warning"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">طلبات صيانة جديدة</h6>
+                                    <p class="mb-0 text-muted small">@Model.MaintenanceRequests طلبات في الانتظار</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <a href="/Maintenance" class="btn btn-sm btn-outline-warning">عرض</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (Model.PendingPayments > 0)
+                    {
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-clock text-info"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">مدفوعات معلقة</h6>
+                                    <p class="mb-0 text-muted small">@Model.PendingPayments مدفوعات في الانتظار</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <a href="/Payments?status=Pending" class="btn btn-sm btn-outline-info">عرض</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                @if (Model.OverduePayments == 0 && Model.MaintenanceRequests == 0 && Model.PendingPayments == 0)
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle text-success mb-3" style="font-size: 3rem;"></i>
+                        <p class="text-muted">لا توجد تنبيهات في الوقت الحالي</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh dashboard every 5 minutes
+        setTimeout(function() {
+            location.reload();
+        }, 300000);
+    </script>
+}

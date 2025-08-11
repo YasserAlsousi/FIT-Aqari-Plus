@@ -1,0 +1,137 @@
+@model PropertyManagement.Core.Entities.Tenant
+@{
+    ViewData["Title"] = "إضافة مستأجر جديد";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="/Tenants">المستأجرين</a></li>
+                <li class="breadcrumb-item active">إضافة مستأجر جديد</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-user-plus me-2"></i>
+            إضافة مستأجر جديد
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">بيانات المستأجر</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label">الاسم الأول <span class="text-danger">*</span></label>
+                            <input asp-for="FirstName" class="form-control" placeholder="أدخل الاسم الأول">
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label">اسم العائلة <span class="text-danger">*</span></label>
+                            <input asp-for="LastName" class="form-control" placeholder="أدخل اسم العائلة">
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email" class="form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="example@email.com">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Phone" class="form-label">رقم الهاتف <span class="text-danger">*</span></label>
+                            <input asp-for="Phone" class="form-control" placeholder="01xxxxxxxxx">
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NationalId" class="form-label">الرقم القومي <span class="text-danger">*</span></label>
+                            <input asp-for="NationalId" class="form-control" placeholder="أدخل الرقم القومي">
+                            <span asp-validation-for="NationalId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DateOfBirth" class="form-label">تاريخ الميلاد</label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control">
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">العنوان</label>
+                        <textarea asp-for="Address" class="form-control" rows="3" placeholder="أدخل العنوان الكامل"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Occupation" class="form-label">المهنة</label>
+                            <input asp-for="Occupation" class="form-control" placeholder="مثال: مهندس">
+                            <span asp-validation-for="Occupation" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="MonthlyIncome" class="form-label">الدخل الشهري (جنيه)</label>
+                            <input asp-for="MonthlyIncome" type="number" step="0.01" class="form-control" placeholder="10000">
+                            <span asp-validation-for="MonthlyIncome" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmergencyContact" class="form-label">جهة اتصال الطوارئ</label>
+                        <input asp-for="EmergencyContact" class="form-control" placeholder="اسم ورقم هاتف جهة الاتصال">
+                        <span asp-validation-for="EmergencyContact" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/Tenants" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            حفظ المستأجر
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    معلومات مهمة
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">نصائح:</h6>
+                    <ul class="mb-0">
+                        <li>تأكد من صحة البريد الإلكتروني</li>
+                        <li>رقم الهاتف مطلوب للتواصل</li>
+                        <li>الرقم القومي مطلوب للتحقق من الهوية</li>
+                        <li>معلومات الدخل تساعد في تقييم الملاءة المالية</li>
+                        <li>جهة اتصال الطوارئ مهمة في الحالات الاستثنائية</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,345 @@
+@model PropertyManagement.Web.Models.MaintenanceReportViewModel
+@{
+    ViewData["Title"] = "تقرير الصيانة";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-tools me-2"></i>
+            تقرير الصيانة
+        </h1>
+        <div class="btn-group" role="group">
+            <a href="/Reports" class="btn btn-secondary">
+                <i class="fas fa-arrow-right me-1"></i>
+                العودة للتقارير
+            </a>
+            <button class="btn btn-success" onclick="window.print()">
+                <i class="fas fa-print me-1"></i>
+                طباعة
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                إجمالي طلبات الصيانة
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tools fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                الطلبات المكتملة
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.CompletedRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                الطلبات قيد التنفيذ
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.InProgressRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cog fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                إجمالي التكلفة
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalCost.ToString("C") EGP</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Requests Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">تفاصيل طلبات الصيانة</h6>
+        </div>
+        <div class="card-body">
+            @if (Model.MaintenanceRequests.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>العنوان</th>
+                                <th>العقار</th>
+                                <th>الفئة</th>
+                                <th>الأولوية</th>
+                                <th>الحالة</th>
+                                <th>التكلفة</th>
+                                <th>المسؤول</th>
+                                <th>تاريخ الإنشاء</th>
+                                <th>تاريخ الإكمال</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in Model.MaintenanceRequests)
+                            {
+                                <tr>
+                                    <td>@request.Id</td>
+                                    <td>
+                                        <strong>@request.Title</strong><br>
+                                        <small class="text-muted">@request.Description?.Substring(0, Math.Min(50, request.Description.Length))...</small>
+                                    </td>
+                                    <td>
+                                        @if (request.Property != null)
+                                        {
+                                            <span>@request.Property.Title</span><br>
+                                            <small class="text-muted">@request.Property.Address</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (request.Category)
+                                        {
+                                            case MaintenanceCategory.Plumbing: <span class="badge bg-info">سباكة</span> break;
+                                            case MaintenanceCategory.Electrical: <span class="badge bg-warning">كهرباء</span> break;
+                                            case MaintenanceCategory.HVAC: <span class="badge bg-primary">تكييف</span> break;
+                                            case MaintenanceCategory.Painting: <span class="badge bg-success">دهان</span> break;
+                                            case MaintenanceCategory.Flooring: <span class="badge bg-secondary">أرضيات</span> break;
+                                            case MaintenanceCategory.Appliances: <span class="badge bg-dark">أجهزة</span> break;
+                                            case MaintenanceCategory.Security: <span class="badge bg-danger">أمان</span> break;
+                                            case MaintenanceCategory.Cleaning: <span class="badge bg-light text-dark">تنظيف</span> break;
+                                            case MaintenanceCategory.Landscaping: <span class="badge bg-success">حدائق</span> break;
+                                            case MaintenanceCategory.Structural: <span class="badge bg-warning">إنشائية</span> break;
+                                            default: <span class="badge bg-secondary">أخرى</span> break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (request.Priority)
+                                        {
+                                            case MaintenancePriority.Low: <span class="badge bg-secondary">منخفضة</span> break;
+                                            case MaintenancePriority.Medium: <span class="badge bg-info">متوسطة</span> break;
+                                            case MaintenancePriority.High: <span class="badge bg-warning">عالية</span> break;
+                                            case MaintenancePriority.Emergency: <span class="badge bg-danger">طارئة</span> break;
+                                            default: <span class="badge bg-secondary">غير محدد</span> break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (request.Status)
+                                        {
+                                            case MaintenanceStatus.Submitted: <span class="badge bg-warning">مُرسل</span> break;
+                                            case MaintenanceStatus.InProgress: <span class="badge bg-info">قيد التنفيذ</span> break;
+                                            case MaintenanceStatus.Completed: <span class="badge bg-success">مكتمل</span> break;
+                                            case MaintenanceStatus.Cancelled: <span class="badge bg-danger">ملغي</span> break;
+                                            case MaintenanceStatus.OnHold: <span class="badge bg-secondary">معلق</span> break;
+                                            default: <span class="badge bg-secondary">@request.Status</span> break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (request.ActualCost.HasValue)
+                                        {
+                                            <strong class="text-success">@request.ActualCost.Value.ToString("C") EGP</strong>
+                                        }
+                                        else if (request.EstimatedCost.HasValue)
+                                        {
+                                            <span class="text-muted">@request.EstimatedCost.Value.ToString("C") EGP (مقدر)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">غير محدد</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(request.AssignedTo))
+                                        {
+                                            <span>@request.AssignedTo</span>
+                                            @if (!string.IsNullOrEmpty(request.AssignedToPhone))
+                                            {
+                                                <br><small class="text-muted">@request.AssignedToPhone</small>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">غير محدد</span>
+                                        }
+                                    </td>
+                                    <td>@request.RequestDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (request.CompletedDate.HasValue)
+                                        {
+                                            @request.CompletedDate.Value.ToString("dd/MM/yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">لم يكتمل</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">لا توجد طلبات صيانة</h5>
+                    <p class="text-muted">لم يتم العثور على أي طلبات صيانة في النظام.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Analysis Charts -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">توزيع حالات الصيانة</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="maintenanceStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">توزيع فئات الصيانة</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="maintenanceCategoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">مؤشرات الأداء</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h4 class="text-success">@Model.CompletionRate.ToString("F1")%</h4>
+                        <p class="text-muted">معدل الإكمال</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h4 class="text-info">@Model.AverageCompletionTime.ToString("F1")</h4>
+                        <p class="text-muted">متوسط وقت الإكمال (أيام)</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h4 class="text-warning">@Model.AverageCost.ToString("C") EGP</h4>
+                        <p class="text-muted">متوسط التكلفة</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h4 class="text-primary">@Model.RequestsThisMonth</h4>
+                        <p class="text-muted">طلبات هذا الشهر</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Maintenance Status Chart
+        const statusCtx = document.getElementById('maintenanceStatusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['معلق', 'قيد التنفيذ', 'مكتمل', 'ملغي'],
+                datasets: [{
+                    data: [@Model.PendingRequests, @Model.InProgressRequests, @Model.CompletedRequests, @Model.CancelledRequests],
+                    backgroundColor: ['#ffc107', '#17a2b8', '#28a745', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Maintenance Category Chart
+        const categoryCtx = document.getElementById('maintenanceCategoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['سباكة', 'كهرباء', 'تكييف', 'دهان', 'أرضيات', 'أجهزة', 'أمان', 'تنظيف', 'حدائق', 'إنشائية', 'أخرى'],
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.CategoryDistribution)),
+                    backgroundColor: [
+                        '#17a2b8', '#ffc107', '#007bff', '#28a745', '#6c757d', 
+                        '#343a40', '#dc3545', '#f8f9fa', '#28a745', '#ffc107', '#6c757d'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+}

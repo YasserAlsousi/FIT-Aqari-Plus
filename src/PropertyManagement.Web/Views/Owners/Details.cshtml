@@ -1,0 +1,224 @@
+@model PropertyManagement.Core.Entities.Owner
+@{
+    ViewData["Title"] = "تفاصيل المالك";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="/Owners">الملاك</a></li>
+                <li class="breadcrumb-item active">@Model.FirstName @Model.LastName</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-user me-2"></i>
+                @Model.FirstName @Model.LastName
+            </h1>
+            <div class="btn-group">
+                <a href="/Owners/Edit/@Model.Id" class="btn btn-warning">
+                    <i class="fas fa-edit me-2"></i>
+                    تعديل
+                </a>
+                <a href="/Properties/Create?ownerId=@Model.Id" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>
+                    إضافة عقار
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <!-- Owner Info Card -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    معلومات المالك
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="avatar-lg bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-user" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="mb-1">@Model.FirstName @Model.LastName</h5>
+                    <p class="text-muted">@Model.NationalId</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">البريد الإلكتروني:</label>
+                    <div>@Model.Email</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">رقم الهاتف:</label>
+                    <div>@Model.Phone</div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Address))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted">العنوان:</label>
+                        <div>@Model.Address</div>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">تاريخ التسجيل:</label>
+                    <div>@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    إحصائيات
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">@Model.Properties.Count</h4>
+                        <small class="text-muted">عدد العقارات</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success">@Model.Properties.Count(p => p.Status == "Rented")</h4>
+                        <small class="text-muted">عقارات مؤجرة</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- Properties List -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-building me-2"></i>
+                        العقارات (@Model.Properties.Count)
+                    </h6>
+                    <a href="/Properties/Create?ownerId=@Model.Id" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>
+                        إضافة عقار
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.Properties.Any())
+                {
+                    <div class="row">
+                        @foreach (var property in Model.Properties)
+                        {
+                            <div class="col-md-6 mb-3">
+                                <div class="card border">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title mb-0">@property.Title</h6>
+                                            <span class="badge bg-@(property.Status == "Available" ? "success" : property.Status == "Rented" ? "warning" : "secondary")">
+                                                @(property.Status == "Available" ? "متاح" : property.Status == "Rented" ? "مؤجر" : "صيانة")
+                                            </span>
+                                        </div>
+                                        <p class="text-muted small mb-2">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            @property.Address
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <small class="text-muted">الإيجار الشهري:</small>
+                                                <div class="fw-bold text-primary">@property.MonthlyRent.ToString("N0") جنيه</div>
+                                            </div>
+                                            <div class="btn-group">
+                                                <a href="/Properties/Details/@property.Id" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="/Properties/Edit/@property.Id" class="btn btn-sm btn-outline-warning">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-building text-muted mb-3" style="font-size: 2rem;"></i>
+                        <h6 class="text-muted">لا يوجد عقارات مسجلة</h6>
+                        <p class="text-muted">ابدأ بإضافة أول عقار لهذا المالك</p>
+                        <a href="/Properties/Create?ownerId=@Model.Id" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>
+                            إضافة عقار جديد
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between">
+            <a href="/Owners" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>
+                العودة للقائمة
+            </a>
+            <div class="btn-group">
+                <a href="/Owners/Edit/@Model.Id" class="btn btn-warning">
+                    <i class="fas fa-edit me-2"></i>
+                    تعديل المالك
+                </a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="fas fa-trash me-2"></i>
+                    حذف المالك
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تأكيد الحذف</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>هل أنت متأكد من حذف هذا المالك؟</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    تحذير: سيتم حذف جميع العقارات المرتبطة بهذا المالك أيضاً
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-lg {
+    width: 80px;
+    height: 80px;
+    font-size: 1.5rem;
+}
+</style>

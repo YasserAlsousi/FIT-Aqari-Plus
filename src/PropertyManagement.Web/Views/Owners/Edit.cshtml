@@ -1,0 +1,131 @@
+@model PropertyManagement.Core.Entities.Owner
+@{
+    ViewData["Title"] = "تعديل المالك";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="/Owners">الملاك</a></li>
+                <li class="breadcrumb-item"><a href="/Owners/Details/@Model.Id">@Model.FirstName @Model.LastName</a></li>
+                <li class="breadcrumb-item active">تعديل</li>
+            </ol>
+        </nav>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-user-edit me-2"></i>
+            تعديل بيانات المالك
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">بيانات المالك</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input asp-for="Id" type="hidden" />
+                    <input asp-for="CreatedAt" type="hidden" />
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label">الاسم الأول <span class="text-danger">*</span></label>
+                            <input asp-for="FirstName" class="form-control">
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label">اسم العائلة <span class="text-danger">*</span></label>
+                            <input asp-for="LastName" class="form-control">
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email" class="form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
+                            <input asp-for="Email" type="email" class="form-control">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Phone" class="form-label">رقم الهاتف</label>
+                            <input asp-for="Phone" class="form-control">
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="NationalId" class="form-label">الرقم القومي</label>
+                        <input asp-for="NationalId" class="form-control">
+                        <span asp-validation-for="NationalId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">العنوان</label>
+                        <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/Owners/Details/@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            حفظ التغييرات
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    معلومات إضافية
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted">تاريخ التسجيل:</label>
+                    <div>@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">عدد العقارات:</label>
+                    <div>@Model.Properties.Count عقار</div>
+                </div>
+
+                @if (Model.UpdatedAt.HasValue)
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted">آخر تحديث:</label>
+                        <div>@Model.UpdatedAt.Value.ToString("dd/MM/yyyy")</div>
+                    </div>
+                }
+
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">نصائح:</h6>
+                    <ul class="mb-0">
+                        <li>تأكد من صحة البريد الإلكتروني</li>
+                        <li>رقم الهاتف مطلوب للتواصل</li>
+                        <li>الرقم القومي يساعد في التحقق من الهوية</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

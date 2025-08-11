@@ -1,0 +1,128 @@
+@model IEnumerable<PropertyManagement.Core.Entities.Owner>
+@{
+    ViewData["Title"] = "الملاك";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    إدارة الملاك
+                </h1>
+                <p class="text-muted">قائمة بجميع ملاك العقارات</p>
+            </div>
+            <a href="/Owners/Create" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                إضافة مالك جديد
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form method="get">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" value="@ViewBag.Search" placeholder="البحث في الملاك...">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Owners List -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الهاتف</th>
+                            <th>عدد العقارات</th>
+                            <th>تاريخ التسجيل</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var owner in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">@owner.FirstName @owner.LastName</h6>
+                                            <small class="text-muted">@owner.NationalId</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@owner.Email</td>
+                                <td>@owner.Phone</td>
+                                <td>
+                                    <span class="badge bg-info">@owner.Properties.Count</span>
+                                </td>
+                                <td>@owner.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="/Owners/Details/@owner.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="/Owners/Edit/@owner.Id" class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i&search=@ViewBag.Search">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-users text-muted mb-3" style="font-size: 3rem;"></i>
+                <h5 class="text-muted">لا يوجد ملاك مسجلين</h5>
+                <p class="text-muted">ابدأ بإضافة أول مالك للنظام</p>
+                <a href="/Owners/Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    إضافة مالك جديد
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+}
+</style>
